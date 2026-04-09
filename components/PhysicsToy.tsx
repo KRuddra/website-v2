@@ -18,6 +18,10 @@ export default function PhysicsToy() {
   useEffect(() => {
     if (!enabled) return;
     if (typeof window === "undefined") return;
+    // Skip on mobile / touch devices — physics interaction is awkward there.
+    if (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches) {
+      return;
+    }
     const container = containerRef.current;
     if (!container) return;
 

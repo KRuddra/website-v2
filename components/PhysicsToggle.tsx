@@ -11,7 +11,7 @@ export default function PhysicsToggle() {
       onClick={toggle}
       aria-label={enabled ? "Turn off physics toy" : "Turn on physics toy"}
       aria-pressed={enabled}
-      className="group rounded-full bg-white/90 px-3 py-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition hover:bg-white dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:bg-zinc-800 dark:hover:ring-white/20"
+      className="group hidden rounded-full bg-white/90 px-3 py-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition hover:bg-white sm:block dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:bg-zinc-800 dark:hover:ring-white/20"
     >
       {/* A tiny falling-cube icon — a square with a motion streak below it */}
       <svg
