@@ -142,7 +142,7 @@ export const projects: Project[] = [
       },
     ],
     status: "live",
-    image: "https://picsum.photos/seed/beyondsight/800/600",
+    image: "/projects/hackthenorth2025.jpg",
     featured: true,
   },
   {
@@ -163,7 +163,7 @@ export const projects: Project[] = [
       },
     ],
     status: "live",
-    image: "https://picsum.photos/seed/fateless/800/600",
+    image: "/projects/hackthevalley.png",
     featured: true,
   },
   {
@@ -177,7 +177,7 @@ export const projects: Project[] = [
       { label: "GitHub", href: "https://github.com/KRuddra/codefourrag" },
     ],
     status: "live",
-    image: "https://picsum.photos/seed/codefourrag/800/600",
+    image: "/projects/codefourrag.jpg",
   },
   {
     name: "IntroSpectacle",
@@ -194,7 +194,7 @@ export const projects: Project[] = [
       },
     ],
     status: "live",
-    image: "https://picsum.photos/seed/introspectacle/800/600",
+    image: "/projects/hackthenorth2024.jpg",
   },
   {
     name: "Symbiote",
@@ -208,7 +208,7 @@ export const projects: Project[] = [
       { label: "GitHub", href: "https://github.com/KRuddra/Symbiote" },
     ],
     status: "live",
-    image: "https://picsum.photos/seed/symbiote/800/600",
+    image: "/projects/symbiote.jpg",
   },
   {
     name: "NextImage AI",
@@ -221,7 +221,7 @@ export const projects: Project[] = [
       { label: "GitHub", href: "https://github.com/KRuddra/NextImage_AI" },
     ],
     status: "live",
-    image: "https://picsum.photos/seed/nextimage/800/600",
+    image: "/projects/nextimage.jpg",
   },
 ];
 

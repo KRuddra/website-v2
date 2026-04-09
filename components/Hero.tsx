@@ -11,7 +11,7 @@ export default function Hero() {
       <AnimateIn delay={0}>
         <div className="relative aspect-[16/7] w-full overflow-hidden rounded-2xl ring-1 ring-zinc-900/10 dark:ring-white/10">
           <Image
-            src="/ruddra.png"
+            src="/ruddra.JPG"
             alt="Ruddra Kantaria"
             fill
             priority
