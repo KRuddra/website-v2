@@ -70,7 +70,8 @@ h4 {
 }
 
 .animate-scroll-x {
-  animation: scroll-x 90s linear infinite;
+  animation: scroll-x var(--scroll-duration, 90s) linear infinite;
+  animation-direction: var(--scroll-direction, normal);
   will-change: transform;
 }
 

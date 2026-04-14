@@ -6,8 +6,9 @@ import PhysicsToggle from "./PhysicsToggle";
 import Magnetic from "./Magnetic";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
+  { href: "/", label: "Home", external: false },
+  { href: "/projects", label: "Projects", external: false },
+  { href: "/resume.pdf", label: "Resume", external: true },
 ];
 
 export default function Nav() {
@@ -21,12 +22,23 @@ export default function Nav() {
               {links.map((link) => (
                 <li key={link.href}>
                   <Magnetic radius={40} strength={6}>
-                    <Link
-                      href={link.href}
-                      className="relative block rounded-full px-3 py-2 transition-colors duration-150 hover:bg-zinc-900/[0.06] active:bg-zinc-900/[0.10] dark:hover:bg-white/[0.08] dark:active:bg-white/[0.12]"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative block rounded-full px-3 py-2 transition-colors duration-150 hover:bg-zinc-900/[0.06] active:bg-zinc-900/[0.10] dark:hover:bg-white/[0.08] dark:active:bg-white/[0.12]"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="relative block rounded-full px-3 py-2 transition-colors duration-150 hover:bg-zinc-900/[0.06] active:bg-zinc-900/[0.10] dark:hover:bg-white/[0.08] dark:active:bg-white/[0.12]"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </Magnetic>
                 </li>
               ))}

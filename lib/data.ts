@@ -19,7 +19,7 @@ export const socialLinks: { label: string; href: string }[] = [
   { label: "LinkedIn", href: "https://linkedin.com/in/ruddra-kantaria" },
   {
     label: "Resume",
-    href: "https://drive.google.com/file/d/1PVpd51QclQeG30ahNOBqAzfiJfYdrxBC/view?usp=sharing",
+    href: "/resume.pdf",
   },
   { label: "Email", href: "mailto:ruddra.kantaria@uwaterloo.ca" },
 ];
