@@ -33,11 +33,11 @@ export const experience: ExperienceItem[] = [
       "Co-founded an AI-driven product analytics start-up backed by Telora ($60K). Built an end-to-end ingestion pipeline and a LangChain-powered engine that turns analytics into deployable UI/UX changes.",
   },
   {
-    role: "Software Engineering Intern",
-    company: "Shopify",
+    role: "Software Development Engineering Intern",
+    company: "Amazon",
     dates: "May 2026 — Sep 2026",
     description:
-      "Led a 100% uptime migration off legacy APIs, backfilling 5B+ rows. Designed Ruby on Rails GraphQL APIs powering cash management for 2M+ retailers, and shipped POS features in React Native + TypeScript.",
+      "Will be engineering and maintaining backend services for the Amazon Payments product team, designing scalable APIs and optimizing transaction-processing systems to support high-volume payment workflows and credit card initializations across millions of customer interactions.",
   },
   {
     role: "Software Engineer (Intern → Part-time)",
