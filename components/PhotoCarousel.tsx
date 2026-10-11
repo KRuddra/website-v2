@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import AutoScroll from "embla-carousel-auto-scroll";
 import SectionHeading from "./SectionHeading";
 
 interface Photo {
@@ -39,11 +41,10 @@ const photos: Photo[] = [
     caption: "Miami, 2025",
   },
   {
-    src: "/carousel/ruddra-5.jpg",
+    src: "/carousel/bowen-island.jpg",
     alt: "Photo 5",
-    title: "Downtown",
-    caption: "Toronto, 2025",
-    objectPosition: "center bottom",
+    title: "Bowen Island",
+    caption: "British Columbia, 2026",
   },
   {
     src: "/carousel/ruddra-6.jpg",
@@ -58,107 +59,70 @@ const photos: Photo[] = [
     caption: "Vancover, 2025",
   },
   {
-    src: "/carousel/ruddra-8.jpg",
+    src: "/carousel/stanley-park-aquarium.jpg",
     alt: "Photo 8",
-    title: "Fields",
-    caption: "Vaughan, 2025",
+    title: "Aquarium",
+    caption: "Vancouver, 2026",
+  },
+  {
+    src: "/carousel/grand-bend.jpg",
+    alt: "Photo 9",
+    title: "Grand Bend",
+    caption: "Ontario, 2026",
   },
 ];
 
-type Mode = "normal" | "forward" | "backward";
+// Embla's loop recycles slides that scroll off-screen. For the wrap to stay
+// invisible, the track must be wider than ~2x the viewport so there are always
+// off-screen slides to move. Repeating the set guarantees that on any display.
+const LOOP_COPIES = 3;
+const slides = Array.from({ length: LOOP_COPIES }, () => photos).flat();
 
-const NORMAL_CYCLE_MS = 90_000;
-const BOOST_MULTIPLIER = 3;
-const SNAP_DURATION_MS = 450;
+// Milliseconds between steps while an arrow is held down.
+const HOLD_STEP_MS = 400;
 
 export default function PhotoCarousel() {
-  const items = [...photos, ...photos];
-  const ulRef = useRef<HTMLUListElement | null>(null);
-  const modeRef = useRef<Mode>("normal");
-  const offsetRef = useRef(0);
-  const halfWidthRef = useRef(0);
-  const slotRef = useRef(0);
-  const lastTsRef = useRef<number | null>(null);
-  const snapRef = useRef<
-    null | { from: number; to: number; start: number }
-  >(null);
-  const hoverRef = useRef(false);
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, align: "start", dragFree: true, containScroll: false },
+    [
+      AutoScroll({
+        playOnInit: true,
+        speed: 1,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    ],
+  );
 
-  useEffect(() => {
-    const ul = ulRef.current;
-    if (!ul) return;
+  const holdTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    const measure = () => {
-      halfWidthRef.current = ul.scrollWidth / 2;
-      const li0 = ul.children[0] as HTMLElement | undefined;
-      const li1 = ul.children[1] as HTMLElement | undefined;
-      if (li0 && li1) {
-        slotRef.current = li1.offsetLeft - li0.offsetLeft;
-      }
-    };
-
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(ul);
-    window.addEventListener("resize", measure);
-
-    let rafId = 0;
-    const step = (ts: number) => {
-      const last = lastTsRef.current ?? ts;
-      const dt = ts - last;
-      lastTsRef.current = ts;
-
-      const half = halfWidthRef.current;
-      if (half > 0) {
-        const snap = snapRef.current;
-        if (snap) {
-          const t = Math.min(1, (ts - snap.start) / SNAP_DURATION_MS);
-          const eased = 1 - Math.pow(1 - t, 3);
-          offsetRef.current = snap.from + (snap.to - snap.from) * eased;
-          if (t >= 1) snapRef.current = null;
-        } else if (!hoverRef.current || modeRef.current !== "normal") {
-          const base = half / NORMAL_CYCLE_MS;
-          const mode = modeRef.current;
-          let v = base;
-          if (mode === "forward") v = base * BOOST_MULTIPLIER;
-          else if (mode === "backward") v = -base * BOOST_MULTIPLIER;
-          offsetRef.current -= v * dt;
-        }
-
-        let o = offsetRef.current;
-        if (o <= -half) o += half;
-        else if (o > 0) o -= half;
-        offsetRef.current = o;
-
-        ul.style.transform = `translate3d(${o}px, 0, 0)`;
-      }
-
-      rafId = requestAnimationFrame(step);
-    };
-    rafId = requestAnimationFrame(step);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
-
-  const activate = (m: Mode) => {
-    modeRef.current = m;
-    snapRef.current = null;
-  };
-
-  const release = () => {
-    if (modeRef.current === "normal") return;
-    modeRef.current = "normal";
-    const slot = slotRef.current;
-    if (slot > 0) {
-      const from = offsetRef.current;
-      const to = Math.round(from / slot) * slot;
-      snapRef.current = { from, to, start: performance.now() };
+  const stopHold = useCallback(() => {
+    if (holdTimer.current !== null) {
+      clearInterval(holdTimer.current);
+      holdTimer.current = null;
     }
-  };
+    // Resume the ambient drift once the arrow is released.
+    emblaApi?.plugins().autoScroll?.play();
+  }, [emblaApi]);
+
+  const startHold = useCallback(
+    (direction: "forward" | "backward") => {
+      if (!emblaApi) return;
+      // Pause the drift so the manual direction wins while held.
+      emblaApi.plugins().autoScroll?.stop();
+      const step = () =>
+        direction === "forward"
+          ? emblaApi.scrollNext()
+          : emblaApi.scrollPrev();
+      step();
+      if (holdTimer.current !== null) clearInterval(holdTimer.current);
+      holdTimer.current = setInterval(step, HOLD_STEP_MS);
+    },
+    [emblaApi],
+  );
+
+  // Clear any pending interval if the component unmounts mid-hold.
+  useEffect(() => stopHold, [stopHold]);
 
   return (
     <section aria-label="Places">
@@ -168,58 +132,55 @@ export default function PhotoCarousel() {
           <ArrowButton
             label="Scroll backward"
             direction="left"
-            onActivate={() => activate("backward")}
-            onRelease={release}
+            onActivate={() => startHold("backward")}
+            onRelease={stopHold}
           />
           <ArrowButton
             label="Scroll forward"
             direction="right"
-            onActivate={() => activate("forward")}
-            onRelease={release}
+            onActivate={() => startHold("forward")}
+            onRelease={stopHold}
           />
         </div>
       </div>
       <div
-        className="relative w-screen overflow-hidden py-6"
+        className="relative w-screen py-6"
         style={{ marginLeft: "calc(50% - 50vw)" }}
       >
-        <ul
-          ref={ulRef}
-          className="flex w-max items-center gap-5 will-change-transform sm:gap-8"
-          onMouseEnter={() => {
-            hoverRef.current = true;
-          }}
-          onMouseLeave={() => {
-            hoverRef.current = false;
-          }}
+        <div
+          className="cursor-grab overflow-hidden active:cursor-grabbing"
+          ref={emblaRef}
         >
-          {items.map((photo, i) => (
-            <li
-              key={`${photo.src}-${i}`}
-              className="group/photo relative aspect-[3/2] w-72 flex-none overflow-hidden rounded-2xl bg-zinc-100 ring-1 ring-zinc-900/10 transition-transform duration-500 ease-out [will-change:transform] hover:scale-105 sm:w-[28rem] sm:rounded-3xl dark:bg-zinc-800 dark:ring-white/10"
-            >
-              <Image
-                src={photo.src}
-                alt={photo.alt}
-                fill
-                sizes="(min-width: 640px) 28rem, 18rem"
-                className="object-cover"
-                style={
-                  photo.objectPosition
-                    ? { objectPosition: photo.objectPosition }
-                    : undefined
-                }
-                loading="lazy"
-              />
-              <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover/photo:opacity-100">
-                <div className="text-base font-semibold text-white">
-                  {photo.title}
+          <ul className="flex items-center">
+            {slides.map((photo, i) => (
+              <li
+                key={`${photo.src}-${i}`}
+                className="group/photo relative mr-5 aspect-[3/2] w-72 flex-none select-none overflow-hidden rounded-2xl bg-zinc-100 ring-1 ring-zinc-900/10 transition-transform duration-500 ease-out [will-change:transform] hover:scale-105 sm:mr-8 sm:w-[28rem] sm:rounded-3xl dark:bg-zinc-800 dark:ring-white/10"
+              >
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  sizes="(min-width: 640px) 28rem, 18rem"
+                  className="pointer-events-none object-cover"
+                  style={
+                    photo.objectPosition
+                      ? { objectPosition: photo.objectPosition }
+                      : undefined
+                  }
+                  draggable={false}
+                  loading="lazy"
+                />
+                <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover/photo:opacity-100">
+                  <div className="text-base font-semibold text-white">
+                    {photo.title}
+                  </div>
+                  <div className="text-xs text-white/80">{photo.caption}</div>
                 </div>
-                <div className="text-xs text-white/80">{photo.caption}</div>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

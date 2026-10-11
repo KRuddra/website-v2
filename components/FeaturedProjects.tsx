@@ -1,6 +1,6 @@
 import Link from "next/link";
 import AnimateIn from "./AnimateIn";
-import ProjectCard from "./ProjectCard";
+import ProjectRow from "./ProjectRow";
 import SectionHeading from "./SectionHeading";
 import { projects } from "@/lib/data";
 
@@ -20,13 +20,15 @@ export default function FeaturedProjects() {
           All projects →
         </Link>
       </div>
-      <div className="grid grid-cols-1 gap-x-12 gap-y-12 sm:grid-cols-2">
+      <ul className="space-y-1">
         {featured.map((project, idx) => (
-          <AnimateIn key={project.name} delay={idx * 100}>
-            <ProjectCard project={project} />
-          </AnimateIn>
+          <li key={project.name}>
+            <AnimateIn delay={idx * 100}>
+              <ProjectRow project={project} />
+            </AnimateIn>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }

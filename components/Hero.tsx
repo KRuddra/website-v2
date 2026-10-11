@@ -3,11 +3,12 @@ import { Fragment } from "react";
 import AnimateIn from "./AnimateIn";
 import SplitText from "./SplitText";
 import Magnetic from "./Magnetic";
+import BjjBelt from "./BjjBelt";
 import { bio, socialLinks } from "@/lib/data";
 
 export default function Hero() {
   return (
-    <section className="flex flex-col gap-10 pb-12">
+    <section className="flex flex-col gap-10">
       <AnimateIn delay={0}>
         <div className="relative aspect-[16/7] w-full overflow-hidden rounded-2xl ring-1 ring-zinc-900/10 dark:ring-white/10">
           <Image
@@ -21,9 +22,14 @@ export default function Hero() {
         </div>
       </AnimateIn>
       <div className="flex flex-col gap-5">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
-          <SplitText text={bio.name} delay={150} stagger={40} />
-        </h1>
+        <div className="flex flex-col gap-3">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
+            <SplitText text={bio.name} delay={150} stagger={40} />
+          </h1>
+          <AnimateIn delay={150}>
+            <BjjBelt />
+          </AnimateIn>
+        </div>
         <AnimateIn delay={100}>
           <ul className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-900 dark:text-zinc-100">
             {socialLinks.map((link, i) => (
@@ -53,13 +59,23 @@ export default function Hero() {
           </ul>
         </AnimateIn>
         <AnimateIn delay={200}>
-          <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400 max-w-md">
-            {bio.shortBio}
-          </p>
-        </AnimateIn>
-        <AnimateIn delay={300}>
-          <p className="text-sm text-zinc-500 dark:text-zinc-500">
-            — {bio.location}
+          <p className="max-w-md text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {bio.intro.map((seg, i) =>
+              seg.href ? (
+                <Magnetic key={i} radius={40} strength={6}>
+                  <a
+                    href={seg.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-zinc-900 transition-colors duration-150 hover:text-zinc-500 dark:text-zinc-100 dark:hover:text-zinc-400"
+                  >
+                    {seg.text}
+                  </a>
+                </Magnetic>
+              ) : (
+                <Fragment key={i}>{seg.text}</Fragment>
+              ),
+            )}
           </p>
         </AnimateIn>
       </div>

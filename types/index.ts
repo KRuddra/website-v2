@@ -7,12 +7,13 @@ export interface ProjectLink {
 
 export interface Project {
   name: string;
+  /** Display date, also used for newest-first ordering (e.g. "Sep 2025"). */
+  date: string;
   description: string;
   summary: string;
   tags: string[];
   links: ProjectLink[];
   status: ProjectStatus;
-  image: string;
   featured?: boolean;
 }
 
@@ -33,7 +34,12 @@ export interface EducationItem {
   detail?: string;
 }
 
-export interface SkillCategory {
-  label: string;
-  items: string[];
+export interface Gym {
+  name: string;
+  location?: string;
+  note?: string;
+  duration?: string;
+  current?: boolean;
+  /** Path to a square logo/photo under /public; falls back to initials if absent. */
+  image?: string;
 }

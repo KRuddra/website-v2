@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AnimateIn from "@/components/AnimateIn";
-import ProjectCard from "@/components/ProjectCard";
+import ProjectRow from "@/components/ProjectRow";
 import { projects } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -24,11 +24,11 @@ export default function ProjectsPage() {
         </p>
       </AnimateIn>
 
-      <ul className="mt-16 grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-14 space-y-1">
         {projects.map((project, idx) => (
           <li key={project.name}>
-            <AnimateIn delay={Math.min(idx * 80, 320)}>
-              <ProjectCard project={project} />
+            <AnimateIn delay={Math.min(idx * 60, 240)}>
+              <ProjectRow project={project} />
             </AnimateIn>
           </li>
         ))}

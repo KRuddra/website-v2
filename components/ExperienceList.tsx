@@ -14,25 +14,6 @@ function PlaceholderLogo({ label }: { label: string }) {
   );
 }
 
-function HoverArrow() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 16 16"
-      fill="none"
-      className="h-3 w-3 flex-shrink-0 -translate-x-1 text-zinc-500 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 dark:text-zinc-400"
-    >
-      <path
-        d="M1 8h13M9 3l5 5-5 5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 interface RowProps {
   logoLabel: string;
   title: string;
@@ -66,10 +47,7 @@ function Row({ logoLabel, title, subtitle, dates, description, url }: RowProps) 
       </div>
       <div className="ml-11 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr]">
         <div className="overflow-hidden">
-          <div className="flex items-start gap-2 pt-0 opacity-0 transition-all delay-100 duration-200 group-hover:pt-1.5 group-hover:opacity-100">
-            <div className="pt-[5px]">
-              <HoverArrow />
-            </div>
+          <div className="pt-0 opacity-0 transition-all delay-100 duration-200 group-hover:pt-1.5 group-hover:opacity-100">
             <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
               {description}
             </p>
